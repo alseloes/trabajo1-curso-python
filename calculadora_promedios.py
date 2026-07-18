@@ -80,6 +80,38 @@ def determinar_estado(calificaciones, umbral=5.0):
     return aprobadas, reprobadas
 
 
+def obtener_indices_extremos(calificaciones, operacion):
+    """
+    Obtiene los índices de las calificaciones máximas o mínimas.
+
+    Args:
+        calificaciones (list[float]): Lista de calificaciones.
+        operacion (str): Tipo de operación a realizar. Puede ser
+            "maximos" o "minimos".
+
+    Returns:
+        list[int] | None:
+            Lista con los índices encontrados o None si la operación
+            especificada no es válida.
+    """
+
+    indices_extremo_lista = []
+    if operacion == "maximos":
+        valor_maximo = max(calificaciones)
+        for i in range(len(calificaciones)):
+            if calificaciones[i] == valor_maximo:
+                indices_extremo_lista.append(i)
+    elif operacion == "minimos":
+        valor_minimo = min(calificaciones)
+        for i in range(len(calificaciones)):
+            if calificaciones[i] == valor_minimo:
+                indices_extremo_lista.append(i)
+    else:
+        print("Operación inválida")
+        return None
+    return indices_extremo_lista
+
+
 def encontrar_extremos(calificaciones):
     """
     Encuentra los índices de las calificaciones máximas y mínimas.
@@ -95,9 +127,38 @@ def encontrar_extremos(calificaciones):
 
     if not calificaciones:
         return None, None
-    indice_max = calificaciones.index(max(calificaciones))
-    indice_min = calificaciones.index(min(calificaciones))
-    return indice_max, indice_min
+    indices_max = obtener_indices_extremos(calificaciones, "maximos")
+    indices_min = obtener_indices_extremos(calificaciones, "minimos")
+    return indices_max, indices_min
+
+
+def presenta_indices(indices_lista, materias, calificaciones, tipo):
+    """
+    Muestra en pantalla las materias con la mejor o peor calificación.
+
+    Si existe una única materia con la calificación extrema, la muestra
+    directamente. Si existen varias, las lista todas.
+
+    Args:
+        indices_lista (list[int]): Índices de las materias a mostrar.
+        materias (list[str]): Lista de nombres de las materias.
+        calificaciones (list[float]): Lista de calificaciones.
+        tipo (str): Texto descriptivo del tipo de calificación
+            ("mejor" o "peor").
+
+    Returns:
+        None
+    """
+
+    if len(indices_lista) == 1:
+        print(
+            f"\nMateria con {tipo} calificación: {materias[indices_lista[0]]} ({calificaciones[indices_lista[0]]})")
+    else:
+        print(
+            f"\nLas siguientes materias tuvieron la {tipo} nota con una calificación de {calificaciones[indices_lista[0]]}")
+        for indice in indices_lista:
+            print(f" - {materias[indice]}")
+    return None
 
 
 def isfloat(valor):
@@ -156,10 +217,8 @@ def main():
     for i in reprobadas:
         print(f"{materias[i]}: {calificaciones[i]}")
 
-    print(
-        f"\nMateria con mejor calificación: {materias[indice_max]} ({calificaciones[indice_max]})")
-    print(
-        f"Materia con peor calificación: {materias[indice_min]} ({calificaciones[indice_min]})")
+    presenta_indices(indice_max, materias, calificaciones, "mejor")
+    presenta_indices(indice_min, materias, calificaciones, "peor")
 
     print("\nGracias por usar la calculadora de promedios. ¡Hasta pronto!")
 
